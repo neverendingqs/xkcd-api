@@ -4,10 +4,12 @@
   "description": "A free, CORS-enabled version of the XKCD API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 0",
     "dev": "micro-dev",
     "start": "micro",
-    "deploy": "now"
+    "deploy": "now --public",
+    "ci:deploy": "now -e NODE_ENV=production --token $NOW_TOKEN --npm --public",
+    "ci:alias": "now alias --token=$NOW_TOKEN"
   },
   "keywords": [
     "xkcd",
@@ -21,6 +23,7 @@
     "micro-cors": "^0.1.0"
   },
   "devDependencies": {
-    "micro-dev": "^2.2.0"
+    "micro-dev": "^2.2.0",
+    "now": "^9.3.3"
   }
 }

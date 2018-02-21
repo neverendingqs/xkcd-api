@@ -1,0 +1,51 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.9.4
+    steps:
+      - checkout
+      - run:
+          name: update-npm
+          command: 'sudo npm install -g npm@latest'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-deps
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: test
+          command: npm test
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
+
+  deploy:
+    docker:
+      - image: circleci/node:8.9.4
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: deploy
+          command: npm run ci:deploy
+      - run:
+          name: alias
+          command: npm run ci:alias
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: release
